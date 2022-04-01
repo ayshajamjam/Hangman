@@ -1,11 +1,14 @@
 import { WORDS } from "./words.js";
 
-const NUMBER_OF_GUESSES = 6;
+const NUMBER_OF_GUESSES = 8;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let guessedWrong = [];
 let guessedCorrect = [];
 let currentGuess = '';
 let countCorrect = 0;
+let letterColor = '#c4c4c4';
+
+document.getElementById("rem_guesses").innerHTML = NUMBER_OF_GUESSES;
 
 // Pick a random word from file
 let rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
@@ -62,6 +65,15 @@ function insertLetter (index) {
     box.classList.add("filled-box")
 }
 
+function shadeKeyBoard(letter, color) {
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        if (elem.textContent === letter) {
+            elem.style.backgroundColor = color
+            break
+        }
+    }
+}
+
 function checkGuess () {
     
     // Incorrect symbol entered
@@ -69,6 +81,11 @@ function checkGuess () {
     if (!found || found.length > 1) {
         return
     }
+
+    let delay = 50
+    setTimeout(()=> {
+        shadeKeyBoard(currentGuess, letterColor)
+    }, delay)
 
     let row = document.getElementsByClassName("letter-row")[0]
 
@@ -78,17 +95,19 @@ function checkGuess () {
         if(guessedWrong.includes(currentGuess))
             toastr.error("You already guessed that");
         else{
-            toastr.error("letter not in list!");
+            toastr.error("letter not in word!");
             guessesRemaining--;
             guessedWrong.push(currentGuess);
             console.log(guessedWrong);
             console.log(guessesRemaining);
+            document.getElementById("rem_guesses").innerHTML = guessesRemaining;
 
             if (guessesRemaining === 0) {
                 toastr.error("You've run out of guesses! Game over!");
                 toastr.info(`The right word was: "${rightGuessString}"`);
             }
         }
+
         return
     }
 
